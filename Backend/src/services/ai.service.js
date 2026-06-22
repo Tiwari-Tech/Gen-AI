@@ -1,66 +1,52 @@
 const {GoogleGenAI} = require("@google/genai");
 
-const ai = new GoogleGenAI({
-    apiKey: process.env.GOOGLE_API_KEY
-});
-
 async function generateInterviewReport({ resume, selfDescription, jobDescription }) {
+    const ai = new GoogleGenAI({
+        apiKey: process.env.GOOGLE_API_KEY
+    });
+
     try {
-        const prompt = `Generate an interview report for a candidate based on the following information:
-        resume: ${resume.slice(0, 2000)}
-        self description: ${selfDescription}
-        job description: ${jobDescription}
+        const prompt = `Generate an interview report as a valid JSON object only. No extra text.
 
-        You MUST respond with ONLY a valid JSON object. No extra text, no markdown, no explanation.
-        Keep it concise:
-        - technicalQuestions: exactly 3 questions
-        - behavioralQuestions: exactly 2 questions
-        - skillGaps: maximum 5 gaps
-        - preparationPlan: exactly 3 days
+        Resume: ${resume.slice(0, 2000)}
+        Self Description: ${selfDescription}
+        Job Description: ${jobDescription}
 
-        The JSON must strictly follow this exact structure:
+        Return ONLY this JSON structure with no extra text or markdown:
         {
-            "matchScore": <number between 0-100>,
+            "matchScore": 75,
             "technicalQuestions": [
-                {
-                    "question": "<technical question>",
-                    "intention": "<why interviewer asks this>",
-                    "answer": "<how to answer it>"
-                }
+                {"question": "question text here", "intention": "intention text here", "answer": "answer text here"},
+                {"question": "question text here", "intention": "intention text here", "answer": "answer text here"},
+                {"question": "question text here", "intention": "intention text here", "answer": "answer text here"}
             ],
             "behavioralQuestions": [
-                {
-                    "question": "<behavioral question>",
-                    "intention": "<why interviewer asks this>",
-                    "answer": "<how to answer it>"
-                }
+                {"question": "question text here", "intention": "intention text here", "answer": "answer text here"},
+                {"question": "question text here", "intention": "intention text here", "answer": "answer text here"}
             ],
             "skillGaps": [
-                {
-                    "skill": "<missing skill>",
-                    "severity": "<low | medium | high>"
-                }
+                {"skill": "skill name here", "severity": "high"},
+                {"skill": "skill name here", "severity": "medium"},
+                {"skill": "skill name here", "severity": "low"}
             ],
             "preparationPlan": [
-                {
-                    "day": <day number>,
-                    "focus": "<focus area>",
-                    "task": "<specific task>"
-                }
+                {"day": 1, "focus": "focus area here", "task": "task description here"},
+                {"day": 2, "focus": "focus area here", "task": "task description here"},
+                {"day": 3, "focus": "focus area here", "task": "task description here"}
             ]
         }`;
 
         const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
+            model: "gemini-3.1-flash-lite",
             contents: prompt,
             config: {
                 responseMimeType: "application/json",
-                maxOutputTokens: 1500
             }
         });
 
         const cleaned = response.text.replace(/```json|```/g, "").trim();
-        return JSON.parse(cleaned);
+console.log("🤖 Gemini response:", cleaned); // ADD THIS
+return JSON.parse(cleaned);
 
     } catch (error) {
         console.error("❌ Error:", error);
