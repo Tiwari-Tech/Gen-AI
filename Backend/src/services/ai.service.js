@@ -8,7 +8,7 @@ async function generateInterviewReport({ resume, selfDescription, jobDescription
     try {
         const prompt = `Generate an interview report as a valid JSON object only. No extra text.
 
-        Resume: ${resume.slice(0, 2000)}
+        Resume: ${resume}
         Self Description: ${selfDescription}
         Job Description: ${jobDescription}
 
@@ -45,7 +45,7 @@ async function generateInterviewReport({ resume, selfDescription, jobDescription
         });
 
         const cleaned = response.text.replace(/```json|```/g, "").trim();
-console.log("🤖 Gemini response:", cleaned); // ADD THIS
+console.log(cleaned); // ADD THIS
 return JSON.parse(cleaned);
 
     } catch (error) {
